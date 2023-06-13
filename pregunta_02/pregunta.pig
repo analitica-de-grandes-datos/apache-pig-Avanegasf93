@@ -12,3 +12,18 @@ $ pig -x local -f pregunta.pig
 
      >>> Escriba el codigo del mapper a partir de este punto <<<
 */
+
+-- Carga el archivo data.tsv y asigna los nombres de columna letter, date y number a cada columna respectiva
+data = LOAD 'data.tsv' AS (letter:CHARARRAY, date:CHARARRAY, number:INT);
+
+-- Ordena los registros de la relación data por la columna letter y la columna number en orden ascendente
+sorted_data = ORDER data BY letter, number ASC;
+
+-- Genera una relación con los registros ordenados, separados por comas
+output_data = FOREACH sorted_data GENERATE CONCAT(letter, ',', number);
+
+-- Almacena el resultado en la carpeta output utilizando PigStorage y separando los valores por comas
+STORE output_data INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+

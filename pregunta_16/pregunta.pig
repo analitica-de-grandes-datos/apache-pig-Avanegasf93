@@ -28,9 +28,9 @@ data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, 
 column = FOREACH data GENERATE UserName, color;
 
 -- Filtrar los registros donde el color es 'blue' o el UserName comienza con 'K' (mayúscula o minúscula)
-filtered = FILTER column BY color == 'blue' OR (UserName MATCHES '.*^[kK].*');
+filtered_by = FILTER column BY color == 'blue' OR (UserName MATCHES '.*^[kK].*');
 
 -- Guardar el resultado en la carpeta 'output' utilizando PigStorage con espacio como delimitador
-STORE filtered INTO 'output' USING PigStorage(',');
+STORE filtered_by INTO 'output' USING PigStorage(',');
 
 -- Fin del script

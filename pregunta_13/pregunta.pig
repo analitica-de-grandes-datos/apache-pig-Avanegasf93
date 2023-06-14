@@ -25,8 +25,8 @@ $ pig -x local -f pregunta.pig
 -- Cargar el archivo 'data.csv' utilizando PigStorage y especificar el esquema de columnas
 data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
--- Filtrar los registros donde el color comienza con 'b' utilizando el operador LIKE de Pig
-filtered = FILTER data BY color MATCHES 'b.*';
+-- Filtrar los registros donde el color comienza con 'b' utilizando REGEX_EXTRACT de Pig
+filtered = FILTER data BY REGEX_EXTRACT(color, '^(b.*)', 1) != '';
 
 -- Proyectar la columna color
 result = FOREACH filtered GENERATE color;
@@ -35,5 +35,6 @@ result = FOREACH filtered GENERATE color;
 STORE result INTO 'output' USING PigStorage(',');
 
 -- Fin del script
+
 
 

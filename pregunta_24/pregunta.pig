@@ -23,7 +23,7 @@ $ pig -x local -f pregunta.pig
 data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
 -- Extraer la segunda parte de la fecha utilizando REGEX_EXTRACT y guardar el resultado en la variable column
-column = FOREACH data GENERATE REGEX_EXTRACT(date, '(.*)-(.*)-(.*)', 2) AS extracted_date;
+column = FOREACH data GENERATE REGEX_EXTRACT(date, '(.*)-(.*)-(.*)',2) AS extracted_date;
 
 -- Filtrar los registros donde extracted_date no sea nulo
 filtered_by = FILTER column BY extracted_date IS NOT NULL;

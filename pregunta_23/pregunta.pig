@@ -26,10 +26,10 @@ $ pig -x local -f pregunta.pig
 data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
 -- Proyectar el UserName y aplicar la condición REGEXP en la columna color
-column = FOREACH data GENERATE UserName, (color REGEXP '[aeiou]$') AS color_regex;
+column = FOREACH data GENERATE UserName, REGEX_EXTRACT(color,'(.*[aeiou]$)',1) AS color_regex;
 
 -- Filtrar los registros donde la columna color coincide con la expresión regular
-filtered_by = FILTER column BY color_regex;
+filtered_by = FILTER column BY color_regex is not null;
 
 -- Guardar el resultado en la carpeta 'output' utilizando PigStorage con ',' como delimitador
 STORE filtered_by INTO 'output' USING PigStorage(',');

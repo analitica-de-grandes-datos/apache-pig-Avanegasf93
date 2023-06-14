@@ -31,3 +31,4 @@ filtered_by = FILTER column BY color == 'blue' OR (UserName MATCHES '^[kK].*');
 -- Guardar el resultado en la carpeta 'output' utilizando PigStorage con espacio como delimitador
 STORE filtered_by INTO 'output' USING PigStorage(' ');
 
+-- Fin del script

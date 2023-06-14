@@ -18,7 +18,7 @@ evaluación, pig sera eejcutado ejecutado en modo local:
 
 $ pig -x local -f pregunta.pig
 
-        /* >>> Escriba su respuesta a partir de este punto <<< */
+        >>> Escriba su respuesta a partir de este punto <<<
 */
 
 -- Cargar el archivo 'data.csv' utilizando PigStorage y especificar el esquema de columnas

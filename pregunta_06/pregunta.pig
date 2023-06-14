@@ -27,7 +27,7 @@ grouped = GROUP expanded_col3 BY word;
 count = FOREACH grouped GENERATE group AS word, COUNT(expanded_col3) AS count;
 
 -- Almacena el resultado en la carpeta output utilizando PigStorage y separando los valores por comas
-STORE wordcount INTO 'output' USING PigStorage(',');
+STORE count INTO 'output' USING PigStorage(',');
 
 -- Fin del script
 

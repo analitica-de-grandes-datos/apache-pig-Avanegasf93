@@ -31,6 +31,6 @@ column = FOREACH data GENERATE UserName, color;
 filtered = FILTER column BY color == 'blue' OR (UserName MATCHES '.*^[kK].*');
 
 -- Guardar el resultado en la carpeta 'output' utilizando PigStorage con espacio como delimitador
-STORE filtered INTO 'output' USING PigStorage(' ');
+STORE filtered INTO 'output' USING PigStorage(',');
 
 -- Fin del script

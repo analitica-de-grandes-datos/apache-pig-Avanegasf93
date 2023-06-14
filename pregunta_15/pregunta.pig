@@ -18,7 +18,9 @@ evaluación, pig sera eejcutado ejecutado en modo local:
 
 $ pig -x local -f pregunta.pig
 
+        >>> Escriba su respuesta a partir de este punto <<< 
 */
+
 -- Cargar el archivo 'data.csv' utilizando PigStorage y especificar el esquema de columnas
 data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
@@ -26,7 +28,7 @@ data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, 
 column = FOREACH data GENERATE UserName, color;
 
 -- Filtrar los registros donde el color es 'blue' o el UserName comienza con 'K' (mayúscula o minúscula)
-filtered_by = FILTER column BY color == 'blue' OR (UserName MATCHES '.*^[kK].*');
+filtered_by = FILTER column BY color == 'blue' AND (UserName MATCHES '.*^[zZ].*');
 
 -- Guardar el resultado en la carpeta 'output' utilizando PigStorage con espacio como delimitador
 STORE filtered_by INTO 'output' USING PigStorage(',');

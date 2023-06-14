@@ -21,3 +21,18 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Carga el archivo data.csv y asigna los nombres de columna a cada columna respectiva
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+
+-- Proyecta la columna UserLastName y su longitud
+apellido_longitud = FOREACH data GENERATE UserLastName, SIZE(UserLastName) AS longitud;
+
+-- Ordena los resultados por longitud y apellido en orden ascendente
+ordenado = ORDER apellido_longitud BY longitud ASC, UserLastName ASC;
+
+-- Almacena el resultado en la carpeta output utilizando PigStorage
+STORE ordenado INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+
+

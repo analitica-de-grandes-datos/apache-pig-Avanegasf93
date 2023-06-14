@@ -26,15 +26,19 @@ $ pig -x local -f pregunta.pig
 data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
 -- Filtrar los registros donde el color comienza con 'b' utilizando REGEX_EXTRACT de Pig
-filtered = FILTER data BY REGEX_EXTRACT(color, '^(b.*)', 1) != '';
+column = FOREACH data GENERATE REGEX_EXTRACT(color, '^(b.*)', 1) AS C1;
 
--- Proyectar la columna color
-result = FOREACH filtered GENERATE color;
+-- Filtrar los registros que no tienen valor nulo en la columna C1
+filtered = FILTER column BY C1 IS NOT NULL;
+
+-- Proyectar la columna C1
+result = FOREACH filtered GENERATE C1;
 
 -- Almacenar el resultado en la carpeta 'output' utilizando PigStorage
 STORE result INTO 'output' USING PigStorage(',');
 
 -- Fin del script
+
 
 
 

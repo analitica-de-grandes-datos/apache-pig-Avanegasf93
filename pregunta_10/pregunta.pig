@@ -30,8 +30,11 @@ column = FOREACH data GENERATE UserLastName, SIZE(UserLastName) AS longitud;
 -- Ordenar la relación por longitud en orden descendente y por apellido en orden ascendente
 sorted_data = ORDER column BY longitud DESC, UserLastName ASC;
 
+-- Limitar los resultados a los primeros 5 registros
+limited_data = LIMIT sorted_data 5;
+
 -- Almacenar el resultado en la carpeta 'output' utilizando PigStorage
-STORE sorted_data INTO 'output' USING PigStorage(',');
+STORE limited_data INTO 'output' USING PigStorage(',');
 
 -- Fin del script
 

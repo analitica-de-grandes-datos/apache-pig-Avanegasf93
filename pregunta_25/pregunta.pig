@@ -21,10 +21,10 @@ $ pig -x local -f pregunta.pig
 */
 
 -- Cargar el archivo 'data.csv' en Pig y definir el esquema de columnas
-datal = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
 -- Extraer la segunda parte de la fecha utilizando REGEX_EXTRACT y guardar el resultado en la variable column
-column = FOREACH datal GENERATE UserName, SUBSTRING_INDEX(UserName, 'a', 0);
+column = FOREACH data GENERATE INDEXOF(UserName, 'a', 0);
 
 -- Guardar el resultado en la carpeta 'output' utilizando PigStorage
 STORE column INTO 'output' USING PigStorage(',');

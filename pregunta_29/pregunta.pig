@@ -34,3 +34,35 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Cargamos los datos desde el archivo 'data.csv'
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+
+-- Extraemos la columna de fechas y la asignamos a la variable 'dates'
+dates = FOREACH data GENERATE date AS d1;
+
+-- Convertimos las fechas de formato chararray a DateTime y las asignamos a la variable 'd2'
+d2 = FOREACH dates GENERATE ToDate(d1,'yyyy-MM-dd') AS (date_time: DateTime);
+
+-- Generamos nuevas columnas a partir de la fecha en formato DateTime, incluyendo la fecha completa, el nombre del mes, el mes y el número del mes
+column = FOREACH d2 GENERATE ToString(date_time, 'yyyy-MM-dd') AS (all_date:chararray), ToString(date_time, 'MMM') AS (name_month:chararray), ToString(date_time, 'MM') AS (mes:chararray), ToString(date_time, 'M') AS (month);
+
+-- Reemplazamos el nombre del mes 'Jan' por 'ene' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Jan','ene') AS name_month, mes, month;
+
+-- Reemplazamos el nombre del mes 'Apr' por 'abr' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Apr','abr') AS name_month, mes, month;
+
+-- Reemplazamos el nombre del mes 'Aug' por 'ago' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Aug','ago') AS name_month, mes, month;
+
+-- Reemplazamos el nombre del mes 'Dec' por 'dic' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Dec','dic') AS name_month, mes, month;
+
+-- Convertimos el nombre del mes a minúsculas y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, LOWER(name_month), mes, month;
+
+-- Guardamos los resultados en el archivo 'output' utilizando el formato PigStorage(',')
+STORE column INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+

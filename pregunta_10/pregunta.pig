@@ -21,3 +21,22 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Cargar el archivo 'data.csv' utilizando PigStorage y especificar el esquema de columnas
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+
+-- Generar una relación que contenga el apellido y su longitud
+column = FOREACH data GENERATE UserLastName, SIZE(UserLastName) AS longitud;
+
+-- Ordenar la relación por longitud en orden descendente y por apellido en orden ascendente
+sorted_data = ORDER column BY longitud DESC, UserLastName ASC;
+
+-- Limitar los resultados a los primeros 5 registros
+limited_data = LIMIT sorted_data 5;
+
+-- Almacenar el resultado en la carpeta 'output' utilizando PigStorage
+STORE limited_data INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+
+
+

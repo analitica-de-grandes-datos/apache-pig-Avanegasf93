@@ -28,3 +28,31 @@ $ pig -x local -f pregunta.pig
 
          >>> Escriba su respuesta a partir de este punto <<<
 */
+
+-- Carga el archivo data.csv y define el esquema de las columnas
+data = LOAD 'data.csv' USING PigStorage(',') AS (
+    driverId: INT,
+    truckId: INT,
+    eventTime: chararray,
+    eventType: chararray,
+    longitude: DOUBLE,
+    latitude: DOUBLE,
+    eventKey: chararray,
+    correlationId: chararray,
+    driverName: chararray,
+    routeId: BIGINTEGER,
+    routeName: chararray,
+    eventDate: chararray
+);
+
+-- Obtiene los primeros 10 registros para las primeras tres columnas
+limited_data = LIMIT data 10;
+limited_data_subset = FOREACH limited_data GENERATE driverId, truckId, eventTime;
+
+-- Ordena los registros por driverId, truckId y eventTime en orden ascendente
+sorted_data = ORDER limited_data_subset BY driverId, truckId, eventTime;
+
+-- Almacena el resultado en la carpeta output utilizando PigStorage y separando los valores por comas
+STORE sorted_data INTO 'output' USING PigStorage(',');
+
+-- Fin del script

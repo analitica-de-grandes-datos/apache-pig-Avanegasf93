@@ -34,42 +34,34 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
--- Cargar el archivo 'data.csv' en Pig
+-- Cargamos los datos desde el archivo 'data.csv'
 data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
 
--- Proyectar el campo date y convertirlo en formato de fecha
+-- Extraemos la columna de fechas y la asignamos a la variable 'dates'
 dates = FOREACH data GENERATE date AS d1;
-dates = FOREACH dates GENERATE ToDate(d1, 'yyyy-MM-dd') AS date_time;
 
--- Aplicar las transformaciones necesarias para obtener la salida requerida
-column = FOREACH dates GENERATE
-    ToString(date_time, 'yyyy-MM-dd') AS fecha_completa,
-    LOWER(REPLACE(ToString(date_time, 'MMM'), 'Jan', 'ene')) AS nombre_mes,
-    ToString(date_time, 'MM') AS mes,
-    ToString(date_time, 'M') AS month;
+-- Convertimos las fechas de formato chararray a DateTime y las asignamos a la variable 'd2'
+d2 = FOREACH dates GENERATE ToDate(d1,'yyyy-MM-dd') AS (date_time: DateTime);
 
--- Reemplazar los nombres de los meses abreviados
-column = FOREACH column GENERATE
-    fecha_completa,
-    REPLACE(nombre_mes, 'Apr', 'abr') AS nombre_mes,
-    mes,
-    month;
+-- Generamos nuevas columnas a partir de la fecha en formato DateTime, incluyendo la fecha completa, el nombre del mes, el mes y el número del mes
+column = FOREACH d2 GENERATE ToString(date_time, 'yyyy-MM-dd') AS (all_date:chararray), ToString(date_time, 'MMM') AS (name_month:chararray), ToString(date_time, 'MM') AS (mes:chararray), ToString(date_time, 'M') AS (month);
 
--- Reemplazar otros nombres de meses abreviados
-column = FOREACH column GENERATE
-    fecha_completa,
-    REPLACE(nombre_mes, 'Aug', 'ago') AS nombre_mes,
-    mes,
-    month;
+-- Reemplazamos el nombre del mes 'Jan' por 'ene' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Jan','ene') AS name_month, mes, month;
 
--- Reemplazar más nombres de meses abreviados
-column = FOREACH column GENERATE
-    fecha_completa,
-    REPLACE(nombre_mes, 'Dec', 'dic') AS nombre_mes,
-    mes,
-    month;
+-- Reemplazamos el nombre del mes 'Apr' por 'abr' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Apr','abr') AS name_month, mes, month;
 
--- Guardar el resultado en la carpeta 'output' utilizando PigStorage
+-- Reemplazamos el nombre del mes 'Aug' por 'ago' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Aug','ago') AS name_month, mes, month;
+
+-- Reemplazamos el nombre del mes 'Dec' por 'dic' y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, REPLACE (name_month,'Dec','dic') AS name_month, mes, month;
+
+-- Convertimos el nombre del mes a minúsculas y conservamos las demás columnas
+column = FOREACH column GENERATE all_date, LOWER(name_month), mes, month;
+
+-- Guardamos los resultados en el archivo 'output' utilizando el formato PigStorage(',')
 STORE column INTO 'output' USING PigStorage(',');
 
 -- Fin del script

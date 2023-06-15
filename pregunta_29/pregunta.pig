@@ -34,3 +34,43 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Cargar el archivo 'data.csv' en Pig
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+
+-- Proyectar el campo date y convertirlo en formato de fecha
+dates = FOREACH data GENERATE date AS d1;
+dates = FOREACH dates GENERATE ToDate(d1, 'yyyy-MM-dd') AS date_time;
+
+-- Aplicar las transformaciones necesarias para obtener la salida requerida
+column = FOREACH dates GENERATE
+    ToString(date_time, 'yyyy-MM-dd') AS fecha_completa,
+    LOWER(REPLACE(ToString(date_time, 'MMM'), 'Jan', 'ene')) AS nombre_mes,
+    ToString(date_time, 'MM') AS mes,
+    ToString(date_time, 'M') AS month;
+
+-- Reemplazar los nombres de los meses abreviados
+column = FOREACH column GENERATE
+    fecha_completa,
+    REPLACE(nombre_mes, 'Apr', 'abr') AS nombre_mes,
+    mes,
+    month;
+
+-- Reemplazar otros nombres de meses abreviados
+column = FOREACH column GENERATE
+    fecha_completa,
+    REPLACE(nombre_mes, 'Aug', 'ago') AS nombre_mes,
+    mes,
+    month;
+
+-- Reemplazar más nombres de meses abreviados
+column = FOREACH column GENERATE
+    fecha_completa,
+    REPLACE(nombre_mes, 'Dec', 'dic') AS nombre_mes,
+    mes,
+    month;
+
+-- Guardar el resultado en la carpeta 'output' utilizando PigStorage
+STORE column INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+

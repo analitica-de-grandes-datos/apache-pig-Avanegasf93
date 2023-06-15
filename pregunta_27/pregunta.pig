@@ -20,3 +20,15 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Cargar el archivo 'data.csv' en Pig
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+
+-- Proyectar el campo firstname y aplicar la función LOCATE para encontrar la posición de 'ia'
+result = FOREACH data GENERATE  INDEXOF(UserName,'ia',0);
+
+-- Guardar el resultado en la carpeta 'output' utilizando PigStorage
+STORE result INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+
+

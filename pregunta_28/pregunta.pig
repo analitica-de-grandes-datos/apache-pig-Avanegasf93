@@ -23,3 +23,20 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Cargar el archivo 'data.csv' en Pig
+lines = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:chararray, color:chararray, number:INT);
+
+-- Proyectar el campo date como d1
+dates = FOREACH lines GENERATE date AS d1;
+
+-- Convertir la cadena de fecha a un tipo DateTime
+parsed_dates = FOREACH dates GENERATE ToDate(d1, 'yyyy-MM-dd') AS date_time;
+
+-- Extraer el año de la fecha en el formato deseado
+year_data = FOREACH parsed_dates GENERATE ToString(date_time, 'yyyy') AS year_full, ToString(date_time, 'yy') AS year_short;
+
+-- Guardar el resultado en la carpeta 'output' utilizando PigStorage
+STORE year_data INTO 'output' USING PigStorage(',');
+
+-- Fin del script
+

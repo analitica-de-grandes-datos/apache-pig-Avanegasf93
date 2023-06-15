@@ -34,3 +34,21 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+-- Cargamos los datos desde el archivo 'data.csv'
+data = LOAD 'data.csv' USING PigStorage(',') AS (ColId:INT, UserName:chararray, UserLastName:chararray, date:datetime, color:chararray, number:INT); 
+
+-- Generamos nuevas columnas a partir de la fecha en formato DateTime, incluyendo la fecha en formato 'yyyy-MM-dd', el día del mes en formato 'dd,d',
+-- el nombre corto del día de la semana en formato 'EEE' y el nombre completo del día de la semana en formato 'EEEE'
+column = FOREACH data GENERATE ToString(date, 'yyyy-MM-dd') AS date, ToString(date, 'dd,d') AS day, ToString(date, 'EEE') AS name_day1, ToString(date, 'EEEE') AS name_day;
+
+-- Asignamos el nombre corto del día de la semana en función del nombre completo del día de la semana utilizando una condición anidada
+result = FOREACH column GENERATE date, day, 
+    (name_day1 == 'Mon'? 'lun':(name_day1 == 'Tue'? 'mar':(name_day1 == 'Wed'? 'mie': 
+    (name_day1 == 'Thu'? 'jue':(name_day1 == 'Fri'? 'vie':(name_day1 == 'Sat'? 'sab':(name_day1 == 'Sun'? 'dom':'falso'))))))) AS short_day,  
+    (name_day == 'Monday'? 'lunes':(name_day == 'Tuesday'? 'martes':(name_day == 'Wednesday'? 'miercoles': 
+    (name_day == 'Thursday'? 'jueves':(name_day == 'Friday'? 'viernes':(name_day == 'Saturday'? 'sabado':(name_day == 'Sunday'? 'domingo':'falso'))))))) AS complete_day; 
+
+-- Guardamos los resultados en el archivo 'output' utilizando el formato PigStorage(',')
+STORE result INTO 'output' USING PigStorage(','); 
+
+-- Fin del script
